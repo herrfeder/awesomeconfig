@@ -13,8 +13,6 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 -- Load Debian menu entries
 require("debian.menu")
 
-local battery_widget = require("battery-widget")
-local volume_control = require("volume-control")
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -48,8 +46,51 @@ beautiful.init(awful.util.get_themes_dir() .. "zenburn/theme.lua")
 terminal = "terminator"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
+
+
+-- Additional Widgets
+local vimnotes = require("vim-notes")
+local layoutindicate = require("keyboard-layout-indicator")
+local battery_widget = require("battery-widget")
+local volume_control = require("volume-control")
+local calendar = require("awesome-wm-widgets.calendar-widget.calendar")
+local cpuwidget = require("awesome-wm-widgets.cpu-widget.cpu-widget")
+local dockerwidget = require("awesome-wm-widgets.docker-widget.docker")
+local logoutmenuwidget = require("awesome-wm-widgets.logout-menu-widget.logout-menu")
+local netspeedwidget = require("awesome-wm-widgets.net-speed-widget.net-speed")
+local todowidget = require("awesome-wm-widgets.todo-widget.todo")
+local ramwidget = require("awesome-wm-widgets.ram-widget.ram-widget")
+
+-- Additional Widgets - Config
 local battery = battery_widget({adapter = "BAT0"})
 local volumecfg = volume_control({})
+
+
+local keylayoutwidget = layoutindicate({
+    layouts = {
+        {name="dv",  layout="de",  variant="dvorak"},
+        {name="de",  layout="de",  variant=nil},
+        {name="us",  layout="us",  variant=nil}
+    },
+    -- optionally, specify commands to be executed after changing layout:
+    post_set_hooks = {
+        "setxkbmap -option caps:escape"
+    }
+})
+
+local calenderwidget = calendar({
+    theme = 'outrun',
+    placement = 'bottom_right',
+    radius = 8,
+})
+
+
+vimnwidget = vimnotes({
+  tooltip="vim notes",
+  folder=os.getenv("HOME").."/notes",
+  image=os.getenv("HOME").."/.config/awesome/icons/gnote.png"})
+
+
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
 -- If you do not like this or do not have such a key,
@@ -122,6 +163,11 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 -- {{{ Wibar
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock()
+mytextclock:connect_signal("button::press", 
+    function(_, _, _, button)
+        if button == 1 then cw.toggle() end
+    end)
+
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = awful.util.table.join(
@@ -190,7 +236,7 @@ awful.screen.connect_for_each_screen(function(s)
     set_wallpaper(s)
 
     awful.tag.add("1", {
-	    icon               = "/home/icons/terminal.png",
+	    icon               = os.getenv("HOME").."/.config/awesome/icons/terminal.png",
 	    layout             = awful.layout.suit.tile,
 	    master_fill_policy = "master_width_factor",
             gap_single_client  = true,
@@ -199,7 +245,7 @@ awful.screen.connect_for_each_screen(function(s)
 	    selected           = true,
 			    })
    awful.tag.add("2", {
-	    icon               = "/home/icons/terminal.png",
+	    icon               = os.getenv("HOME").."/.config/awesome/icons/hacker.png",
 	    layout             = awful.layout.suit.tile,
 	    master_fill_policy = "master_width_factor",
             gap_single_client  = true,
@@ -209,7 +255,7 @@ awful.screen.connect_for_each_screen(function(s)
 			    })
 
    awful.tag.add("3", {
-	    icon               = "/home/icons/chrome.png",
+	    icon               = os.getenv("HOME").."/.config/awesome/icons/chrome.png",
 	    layout             = awful.layout.suit.tile,
 	    master_fill_policy = "master_width_factor",
             gap_single_client  = true,
@@ -219,7 +265,7 @@ awful.screen.connect_for_each_screen(function(s)
 			    })
 
    awful.tag.add("4", {
-	    icon               = "/home/icons/firefox.png",
+	    icon               = os.getenv("HOME").."/.config/awesome/icons/firefox.png",
 	    layout             = awful.layout.suit.tile,
 	    master_fill_policy = "master_width_factor",
             gap_single_client  = true,
@@ -228,7 +274,7 @@ awful.screen.connect_for_each_screen(function(s)
 	    selected           = true,
 			    })
    awful.tag.add("5", {
-	    icon               = "/home/icons/feather.png",
+	    icon               = os.getenv("HOME").."/.config/awesome/icons/feather.png",
 	    layout             = awful.layout.suit.tile,
 	    master_fill_policy = "master_width_factor",
             gap_single_client  = true,
@@ -238,7 +284,7 @@ awful.screen.connect_for_each_screen(function(s)
 			    })
 
    awful.tag.add("6", {
-	    icon               = "/home/icons/radio.png",
+	    icon               = os.getenv("HOME").."/.config/awesome/icons/radio.png",
 	    layout             = awful.layout.suit.tile,
 	    master_fill_policy = "master_width_factor",
             gap_single_client  = true,
@@ -248,7 +294,7 @@ awful.screen.connect_for_each_screen(function(s)
 			    })
 			    
    awful.tag.add("7", {
-	    icon               = "/home/icons/virtualbox.png",
+	    icon               = os.getenv("HOME").."/.config/awesome/icons/virtualbox.png",
 	    layout             = awful.layout.suit.tile,
 	    master_fill_policy = "master_width_factor",
             gap_single_client  = true,
@@ -257,7 +303,7 @@ awful.screen.connect_for_each_screen(function(s)
 	    selected           = true,
 			    })
    awful.tag.add("8", {
-	    icon               = "/home/icons/settings.png",
+	    icon               = os.getenv("HOME").."/.config/awesome/icons/settings.png",
 	    layout             = awful.layout.suit.tile,
 	    master_fill_policy = "master_width_factor",
             gap_single_client  = true,
@@ -265,6 +311,16 @@ awful.screen.connect_for_each_screen(function(s)
 	    screen             = s,
 	    selected           = true,
 			    })
+   awful.tag.add("9", {
+	    icon               = os.getenv("HOME").."/.config/awesome/icons/file.png",
+	    layout             = awful.layout.suit.tile,
+	    master_fill_policy = "master_width_factor",
+            gap_single_client  = true,
+	    gap                = 3,
+	    screen             = s,
+	    selected           = true,
+			    })
+
 
 
 
@@ -305,16 +361,27 @@ awful.screen.connect_for_each_screen(function(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
 	    wibox_sep,
+	    todowidget(),
+	    wibox_sep,
+	    netspeedwidget(),
+	    wibox_sep,
+	    cpuwidget(),
+	    ramwidget(),
+	    wibox_sep,
+	    dockerwidget(),
+	    wibox_sep,
+	    vimnwidget.widget,
+	    wibox_sep,
 	    battery.widget,
 	    wibox_sep,
 	    volumecfg.widget,
 	    wibox_sep,
-	    mykeyboardlayout,
+	    keylayoutwidget,
             wibox.widget.systray(),
 	    wibox_sep,
             mytextclock,
 	    wibox_sep,
-            s.mylayoutbox,
+            logoutmenuwidget(),
         },
     }
 end)
