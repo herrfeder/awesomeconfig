@@ -8,7 +8,8 @@ my daily-use awesome-wm configuration
 
 
 ## installation and configuration
-
+  * clone the repository:
+    * `git clone https://github.com/herrfeder/awesomeconfig`
   * run `install_dependencies.sh` as **root**
   * run `setup_awesome.sh` as **normal user**
     * results in complete config in `~/config/awesome/`
