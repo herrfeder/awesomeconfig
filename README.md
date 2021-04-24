@@ -1,6 +1,11 @@
 # awesomeconfig
 
-my awesome-wm configuration
+my daily-use awesome-wm configuration
+
+## Screenshot
+
+![](/resources/awesome_basic_config.png)
+
 
 ## installation and configuration
 
